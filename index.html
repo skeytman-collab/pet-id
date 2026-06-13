@@ -5,18 +5,49 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль питомца</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; text-align: center; padding: 20px; margin: 0; }
-        .card { background: #1e1e1e; border-radius: 20px; padding: 30px 20px; max-width: 360px; margin: 40px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #2e2e2e; }
-        img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid #00bcd4; margin-bottom: 15px; }
-        h1 { margin: 10px 0 5px 0; color: #ffffff; font-size: 24px; }
-        p { margin: 12px 0; font-size: 15px; line-height: 1.4; text-align: left; background: #262626; padding: 10px 15px; border-radius: 10px; }
-        strong { color: #00bcd4; display: block; margin-bottom: 3px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
-        .btn { display: block; background: #00bcd4; color: #000000; padding: 16px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-top: 25px; font-size: 16px; box-shadow: 0 4px 15px rgba(0,188,212,0.4); text-transform: uppercase; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #131416; color: #9aa0a6; padding: 20px; margin: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
+        .container { display: flex; gap: 24px; max-width: 1100px; width: 100%; margin: 20px auto; }
+        
+        /* Левая колонка - Карточка */
+        .left-column { width: 35%; display: flex; flex-direction: column; gap: 20px; }
+        .main-card { background: #1c1d21; border-radius: 16px; padding: 24px; text-align: center; border: 1px solid #282a30; }
+        .avatar-container { position: relative; width: 100%; padding-top: 100%; margin-bottom: 15px; }
+        .avatar-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; object-fit: cover; }
+        h1 { margin: 10px 0 2px 0; color: #ffffff; font-size: 28px; font-weight: bold; }
+        .breed { color: #80868b; font-size: 15px; margin-bottom: 25px; }
+        
+        /* Блок контактов внутри левой колонки */
+        .contacts-block { background: #202124; border-radius: 12px; padding: 16px; text-align: left; }
+        .contacts-title { color: #00bcd4; font-size: 14px; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .contact-item { font-size: 14px; margin-bottom: 8px; color: #bdc1c6; line-height: 1.4; }
+        .contact-item strong { color: #80868b; font-weight: normal; }
+        
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #00bcd4; color: #131416; padding: 16px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,188,212,0.2); }
+        .btn:hover { background: #00acc1; }
+
+        /* Правая колонка - Детали */
+        .right-column { width: 65%; display: flex; flex-direction: column; gap: 20px; }
+        .info-section { background: #1c1d21; border-radius: 16px; padding: 24px; border: 1px solid #282a30; text-align: left; }
+        .section-header { font-size: 16px; font-weight: bold; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section-header.blue { color: #00bcd4; }
+        .section-header.green { color: #2ecc71; }
+        .section-header.medical { color: #4fc3f7; }
+        
+        .sub-block { margin-bottom: 16px; font-size: 14px; line-height: 1.5; }
+        .sub-block:last-child { margin-bottom: 0; }
+        .sub-title { color: #80868b; font-weight: bold; margin-bottom: 4px; }
+        .sub-text { color: #e8eaed; }
+
+        /* Адаптивность под мобилки */
+        @media (max-width: 768px) {
+            .container { flex-direction: column; padding: 10px; margin: 0; }
+            .left-column, .right-column { width: 100%; }
+        }
     </style>
 </head>
 <body>
-    <div class="card" id="profile">
-        <p style="text-align:center;">Загрузка данных питомца...</p>
+    <div class="container" id="app-container">
+        <p style="text-align:center; width:100%;">Загрузка подробных данных питомца...</p>
     </div>
 
     <script>
@@ -24,51 +55,124 @@
         const dogId = urlParams.get('id');
 
         if (!dogId) {
-            document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка: ID адресника не указан</h3>';
+            document.getElementById('app-container').innerHTML = '<h3 style="text-align:center; color:#fff; width:100%;">Ошибка: ID адресника не указан</h3>';
         } else {
-            // Читаем файл базы данных прямо из этого же репозитория GitHub
             fetch('database.txt')
             .then(res => {
                 if(!res.ok) throw new Error();
                 return res.text();
             })
             .then(text => {
-                // Разделяем строки текстовой базы
                 const lines = text.split('\n');
                 let foundRow = null;
 
-                // Ищем строку, которая начинается с нужного ID
                 for (let line of lines) {
                     const columns = line.split(';');
-                    if (columns[0] && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
+                    if (columns && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
                         foundRow = columns;
                         break;
                     }
                 }
 
                 if (foundRow) {
+                    // Раскладываем все 15 параметров из скриншота-оригинала
                     const name = foundRow[1] || 'Питомец';
-                    const phone = foundRow[2] || '';
-                    const address = foundRow[3] || 'Не указан';
-                    const diet = foundRow[4] || 'Нет особых предписаний';
-                    const photo = foundRow[5] || 'https://unsplash.com';
+                    const breed = foundRow[2] || 'Порода не указана';
+                    const owner = foundRow[3] || 'Не указан';
+                    const phone1 = foundRow[4] || '';
+                    const phone2 = foundRow[5] || '';
+                    const address = foundRow[6] || 'Не указан';
+                    
+                    const character = foundRow[7] || 'Нет данных';
+                    const habits = foundRow[8] || 'Нет данных';
+                    const fears = foundRow[9] || 'Нет данных';
+                    
+                    const ration = foundRow[10] || 'Нет данных';
+                    const forbidden = foundRow[11] || 'Нет данных';
+                    
+                    const allergy = foundRow[12] || 'Нет данных';
+                    const chronic = foundRow[13] || 'Нет';
+                    const medicines = foundRow[14] || 'Нет';
+                    const chip = foundRow[15] || 'Нет';
+                    const photo = foundRow[16] || 'https://unsplash.com';
 
-                    document.getElementById('profile').innerHTML = `
-                        <img src="${photo.trim()}" alt="${name}">
-                        <h1>${name}</h1>
-                        <p><strong>Контакты хозяина</strong>${phone}</p>
-                        <p><strong>Адрес дома</strong>${address}</p>
-                        <p><strong>Особенности и питание</strong>${diet}</p>
-                        <a href="tel:${phone.trim()}" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
+                    document.getElementById('app-container').innerHTML = `
+                        <!-- Левая часть -->
+                        <div class="left-column">
+                            <div class="main-card">
+                                <div class="avatar-container">
+                                    <img src="${photo.trim()}" alt="${name}">
+                                </div>
+                                <h1>${name}</h1>
+                                <div class="breed">${breed}</div>
+                                
+                                <div class="contacts-block">
+                                    <div class="contacts-title">📇 Экстренная связь</div>
+                                    <div class="contact-item"><strong>Основной контакт:</strong> ${owner} ${phone1}</div>
+                                    <div class="contact-item"><strong>Доп. контакт:</strong> ${phone2}</div>
+                                    <div class="contact-item"><strong>Адрес дома:</strong> ${address}</div>
+                                </div>
+                                
+                                <a href="tel:${phone1.trim()}" class="btn">📱 Позвонить хозяину</a>
+                            </div>
+                        </div>
+
+                        <!-- Правая часть -->
+                        <div class="right-column">
+                            <!-- Блок 1 -->
+                            <div class="info-section">
+                                <div class="section-header blue">🧠 Поведение и уход</div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Характер:</div>
+                                    <div class="sub-text">${character}</div>
+                                </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Привычки:</div>
+                                    <div class="sub-text">${habits}</div>
+                                </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Страхи / Стресс:</div>
+                                    <div class="sub-text">${fears}</div>
+                                </div>
+                            </div>
+
+                            <!-- Блок 2 -->
+                            <div class="info-section">
+                                <div class="section-header green">🍲 Кормление</div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Рацион:</div>
+                                    <div class="sub-text">${ration}</div>
+                                </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Запрещено:</div>
+                                    <div class="sub-text" style="color: #ff6b6b;">${forbidden}</div>
+                                </div>
+                            </div>
+
+                            <!-- Блок 3 -->
+                            <div class="info-section">
+                                <div class="section-header medical">🧬 Медицинская карта</div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Аллергии:</div>
+                                    <div class="sub-text">${allergy}</div>
+                                </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Хронические заболевания:</div>
+                                    <div class="sub-text">${chronic}</div>
+                                </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Принимаемые лекарства:</div>
+                                    <div class="sub-text">${medicines}</div>
+                                </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Микрочип:</div>
+                                    <div class="sub-text">${chip}</div>
+                                </div>
+                            </div>
+                        </div>
                     `;
                 } else {
-                    document.getElementById('profile').innerHTML = `<h3 style="text-align:center;">Питомец с ID "${dogId}" не найден</h3>`;
+                    document.getElementById('app-container').innerHTML = `<h3 style="text-align:center; color:#fff; width:100%;">Питомец с ID "${dogId}" не найден</h3>`;
                 }
             })
             .catch(() => {
-                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка чтения базы данных</h3>';
-            });
-        }
-    </script>
-</body>
-</html>
