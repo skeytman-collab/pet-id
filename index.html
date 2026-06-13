@@ -100,7 +100,7 @@
     </div>
 
     <script>
-        // Вся ваша база данных теперь хранится прямо здесь в коде! Роботы Гитхаба прочитают её моментально.
+        // Жестко прописанная база без сложных проверок и внешних запросов
         const database = {
             "id001": {
                 name: "Рекс",
@@ -108,27 +108,28 @@
                 owner: "Иван Петров +79000000000",
                 phone2: "Мария +79000000001",
                 address: "г. Москва, ул. Тверская, д. 15",
-                character: "Очень дружелюбный и активный пес. Любит людей и детей. Может немного тянуть поводок от радости. Знает базовые команды",
-                habits: "Гунять 3 раза в день (утро, день, вечер). Приучен к туалету на улице. Ест 2 раза в день. Спит на своем месте в коридоре. Любит играть с теннисным мячом.",
-                fears: "Очень боится салютов и громких хлопков! Может испугаться резких криков. Не любит оставаться один надолго. Не трогайте еду, когда он ест.",
-                ration: "Сухой корм Royal Canin Maxi Adult. 200г утром (8:00) и 200г вечером (19:00). Всегда должна быть свежая вода.",
-                forbidden: "Категорически нельзя давать: шоколад, виноград, изюм, лук, чеснок, кости, еду со стола.",
-                allergy: "Нет известных аллергий на еду или лекарства.",
-                chronic: "Нет",
-                medicines: "Нет",
-                chip: "900111222333444"
+                character: "Очень дружелюбный и active-пес. Любит людей и детей. Знает команды.",
+                habits: "Выгул 3 раза в день. Приучен к туалету на улице. Ест 2 раза в день.",
+                fears: "Боится салютов и громких звуков. Не трогайте еду, когда он кушает.",
+                ration: "Сухой корм Royal Canin Maxi Adult (200г утром и 200г вечером).",
+                forbidden: "Шоколад, виноград, лук, кости, любая еда со стола.",
+                allergy: "Нет известных аллергий.",
+                chronic: "Нет хронических болезней.",
+                medicines: "Лекарства не принимает.",
+                chip: "900111222333444",
+                phoneCall: "79000000000"
             }
-            // Сюда в будущем через запятую будем дописывать "id002", "id003" и т.д.
         };
 
         const urlParams = new URLSearchParams(window.location.search);
-        const dogId = urlParams ? urlParams.get('id').toLowerCase() : null;
+        // Берем ID и переводим его в нижний регистр, убирая пробелы
+        const rawId = urlParams.get('id');
+        const dogId = rawId ? rawId.trim().toLowerCase() : "";
 
         if (!dogId || !database[dogId]) {
             document.getElementById('app-container').innerHTML = '<h3 style="text-align:center; color:#fff; width:100%;">Питомец не найден в базе данных</h3>';
         } else {
             const dog = database[dogId];
-            const cleanPhone = dog.owner.replace(/\D/g, ''); // Вытаскиваем чистый номер телефона для вызова
 
             document.getElementById('app-container').innerHTML = `
                 <div class="left-column">
@@ -144,7 +145,7 @@
                             <div class="contact-item"><strong>Адрес дома:</strong> ${dog.address}</div>
                         </div>
                         
-                        <a href="tel:${cleanPhone}" class="btn">📞 ПОЗВОНИТЬ ДОМОЙ</a>
+                        <a href="tel:${dog.phoneCall}" class="btn">📞 ПОЗВОНИТЬ ДОМОЙ</a>
                     </div>
                 </div>
 
@@ -190,3 +191,13 @@
                             </div>
                             <div class="sub-block">
                                 <div class="sub-title">Номер микрочипа:</div>
+                                <div class="sub-text" style="font-family:monospace; font-size:15px; color:#a0aec0;">${dog.chip}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+    </script>
+</body>
+</html>
