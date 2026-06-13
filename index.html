@@ -5,32 +5,96 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Профиль питомца</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #131416; color: #9aa0a6; padding: 20px; margin: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
-        .container { display: flex; gap: 24px; max-width: 1100px; width: 100%; margin: 20px auto; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            /* Сочный зеленый газон на фоне с легким затемнением */
+            background: linear-gradient(rgba(15, 16, 19, 0.75), rgba(15, 16, 19, 0.75)), 
+                        url('https://unsplash.com') no-repeat center center fixed; 
+            background-size: cover;
+            color: #e2e8f0; 
+            padding: 20px; 
+            margin: 0; 
+            display: flex; 
+            justify-content: center; 
+            align-items: flex-start; 
+            min-height: 100vh; 
+        }
+        .container { display: flex; gap: 24px; max-width: 1000px; width: 100%; margin: 20px auto; }
         
-        .left-column { width: 35%; display: flex; flex-direction: column; gap: 20px; }
-        .main-card { background: #1c1d21; border-radius: 16px; padding: 24px; text-align: center; border: 1px solid #282a30; }
-        h1 { margin: 10px 0 2px 0; color: #ffffff; font-size: 28px; font-weight: bold; }
-        .breed { color: #80868b; font-size: 15px; margin-bottom: 25px; }
-        
-        .contacts-block { background: #202124; border-radius: 12px; padding: 16px; text-align: left; }
-        .contacts-title { color: #00bcd4; font-size: 14px; font-weight: bold; margin-bottom: 12px; }
-        .contact-item { font-size: 14px; margin-bottom: 8px; color: #bdc1c6; line-height: 1.4; }
-        .contact-item strong { color: #80868b; font-weight: normal; }
-        
-        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #00bcd4; color: #131416; padding: 16px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,188,212,0.2); text-transform: uppercase; }
+        /* Стеклянный премиальный стиль плашек с мятным контуром */
+        .glass-card { 
+            background: rgba(24, 25, 29, 0.75); 
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 24px; 
+            border: 1px solid rgba(46, 213, 115, 0.25); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            padding: 25px;
+            box-sizing: border-box;
+        }
 
-        .right-column { width: 65%; display: flex; flex-direction: column; gap: 20px; }
-        .info-section { background: #1c1d21; border-radius: 16px; padding: 24px; border: 1px solid #282a30; text-align: left; }
-        .section-header { font-size: 16px; font-weight: bold; margin-bottom: 16px; }
-        .section-header.blue { color: #00bcd4; }
-        .section-header.green { color: #2ecc71; }
-        .section-header.medical { color: #4fc3f7; }
+        /* Левая колонка */
+        .left-column { width: 35%; display: flex; flex-direction: column; gap: 20px; }
+        .main-card { text-align: center; }
         
-        .sub-block { margin-bottom: 16px; font-size: 14px; line-height: 1.5; }
+        .avatar-placeholder { 
+            width: 120px; 
+            height: 120px; 
+            border-radius: 50%; 
+            background: linear-gradient(135deg, #2ed573 0%, #1e90ff 100%); 
+            margin: 0 auto 15px auto; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 50px; 
+            box-shadow: 0 0 25px rgba(46, 213, 115, 0.3); 
+            border: 3px solid #ffffff; 
+        }
+        
+        h1 { margin: 10px 0 2px 0; color: #ffffff; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; }
+        .breed { color: #2ed573; font-size: 14px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 25px; }
+        
+        .contacts-block { background: rgba(31, 33, 40, 0.6); border-radius: 16px; padding: 18px; text-align: left; border: 1px solid rgba(255,255,255,0.05); }
+        .contacts-title { color: #2ed573; font-size: 15px; font-weight: bold; margin-bottom: 14px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; }
+        .contact-item { font-size: 14px; margin-bottom: 12px; color: #f7fafc; line-height: 1.5; }
+        .contact-item:last-child { margin-bottom: 0; }
+        .contact-item strong { color: #a0aec0; font-weight: 600; display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 3px; }
+        
+        /* Та самая сочная градиентная кнопка «ПОЗВОНИТЬ ДОМОЙ» */
+        .btn { 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            background: linear-gradient(90deg, #2ed573 0%, #10ac84 100%); 
+            color: #ffffff; 
+            padding: 18px; 
+            border-radius: 30px; 
+            text-decoration: none; 
+            font-weight: 800; 
+            font-size: 16px; 
+            margin-top: 20px; 
+            transition: 0.3s; 
+            box-shadow: 0 6px 20px rgba(46, 213, 115, 0.4); 
+            letter-spacing: 0.5px; 
+        }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(46, 213, 115, 0.6); }
+
+        /* Правая колонка - Объединенная плашка знаний */
+        .right-column { width: 65%; }
+        .info-container { display: flex; flex-direction: column; gap: 24px; }
+        
+        .info-section { border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 20px; }
+        .info-section:last-child { border-bottom: none; padding-bottom: 0; }
+        
+        .section-header { font-size: 18px; font-weight: bold; margin-bottom: 16px; display: flex; align-items: center; gap: 10px; color: #ffffff; }
+        .section-header span { color: #2ed573; font-size: 20px; }
+        
+        .sub-block { margin-bottom: 14px; font-size: 15px; line-height: 1.6; }
         .sub-block:last-child { margin-bottom: 0; }
-        .sub-title { color: #80868b; font-weight: bold; margin-bottom: 4px; }
-        .sub-text { color: #e8eaed; }
+        .sub-title { color: #2ed573; font-weight: 700; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+        .sub-title.danger { color: #ff4757; }
+        .sub-text { color: #edf2f7; }
 
         @media (max-width: 768px) {
             .container { flex-direction: column; padding: 10px; margin: 0; }
@@ -40,7 +104,7 @@
 </head>
 <body>
     <div class="container" id="app-container">
-        <p style="text-align:center; width:100%;">Загрузка подробных данных питомца...</p>
+        <p style="text-align:center; width:100%; color:#fff;">Загрузка профиля питомца...</p>
     </div>
 
     <script>
@@ -62,7 +126,7 @@
                 for (let line of lines) {
                     if (!line.trim()) continue;
                     const columns = line.split(';');
-                    if (columns[0] && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
+                    if (columns && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
                         foundRow = columns;
                         break;
                     }
@@ -89,80 +153,48 @@
                     const chip = foundRow[14] || 'Нет';
 
                     document.getElementById('app-container').innerHTML = `
+                        <!-- Левая колонка -->
                         <div class="left-column">
-                            <div class="main-card">
+                            <div class="glass-card main-card">
+                                <div class="avatar-placeholder">🐾</div>
                                 <h1>${name}</h1>
                                 <div class="breed">${breed}</div>
                                 
                                 <div class="contacts-block">
-                                    <div class="contacts-title">📇 Экстренная связь</div>
-                                    <div class="contact-item"><strong>Основной контакт:</strong> ${owner}</div>
-                                    <div class="contact-item"><strong>Доп. контакт:</strong> ${phone2}</div>
+                                    <div class="contacts-title">🚨 В экстренной ситуации</div>
+                                    <div class="contact-item"><strong>Контакты:</strong> ${owner}</div>
+                                    <div class="contact-item"><strong>Доп. связь:</strong> ${phone2}</div>
                                     <div class="contact-item"><strong>Адрес дома:</strong> ${address}</div>
                                 </div>
                                 
-                                <a href="tel:${phone1}" class="btn">📱 Позвонить хозяину</a>
+                                <a href="tel:${phone1}" class="btn">📞 ПОЗВОНИТЬ ДОМОЙ</a>
                             </div>
                         </div>
 
+                        <!-- Правая колонка (Объединенная плашка) -->
                         <div class="right-column">
-                            <div class="info-section">
-                                <div class="section-header blue">🧠 Поведение и уход</div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Характер:</div>
-                                    <div class="sub-text">${character}</div>
+                            <div class="glass-card info-container">
+                                <!-- Поведение -->
+                                <div class="info-section">
+                                    <div class="section-header"><span>🧠</span> Поведение и уход</div>
+                                    <div class="sub-block">
+                                        <div class="sub-title">Характер:</div>
+                                        <div class="sub-text">${character}</div>
+                                    </div>
+                                    <div class="sub-block">
+                                        <div class="sub-title">Привычки:</div>
+                                        <div class="sub-text">${habits}</div>
+                                    </div>
+                                    <div class="sub-block">
+                                        <div class="sub-title">Страхи / Стресс:</div>
+                                        <div class="sub-text">${fears}</div>
+                                    </div>
                                 </div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Привычки:</div>
-                                    <div class="sub-text">${habits}</div>
-                                </div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Страхи / Стресс:</div>
-                                    <div class="sub-text">${fears}</div>
-                                </div>
-                            </div>
 
-                            <div class="info-section">
-                                <div class="section-header green">🍲 Кормление</div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Рацион:</div>
-                                    <div class="sub-text">${ration}</div>
-                                </div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Запрещено:</div>
-                                    <div class="sub-text" style="color: #ff6b6b;">${forbidden}</div>
-                                </div>
-                            </div>
-
-                            <div class="info-section">
-                                <div class="section-header medical">🧬 Медицинская карта</div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Аллергии:</div>
-                                    <div class="sub-text">${allergy}</div>
-                                </div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Хронические заболевания:</div>
-                                    <div class="sub-text">${chronic}</div>
-                                </div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Принимаемые лекарства:</div>
-                                    <div class="sub-text">${medicines}</div>
-                                </div>
-                                <div class="sub-block">
-                                    <div class="sub-title">Микрочип:</div>
-                                    <div class="sub-text">${chip}</div>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                } else {
-                    document.getElementById('app-container').innerHTML = `<h3 style="text-align:center; color:#fff; width:100%;">Питомец с ID "${dogId}" не найден в базе данных</h3>`;
-                }
-            })
-            .catch(() => {
-                document.getElementById('app-container').innerHTML = '<h3 style="text-align:center; color:#fff; width:100%;">Ошибка чтения базы данных</h3>';
-            });
-        }
-    </script>
-</body>
-</html>
+                                <!-- Кормление -->
+                                <div class="info-section">
+                                    <div class="section-header"><span>🥗</span> Кормление</div>
+                                    <div class="sub-block">
+                                        <div class="sub-title">Рацион:</div>
+                                        <div class="sub-text">${ration}</div>
+                                    </div>
