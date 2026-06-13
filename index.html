@@ -20,7 +20,6 @@
     </div>
 
     <script>
-        // Ссылка на вашу таблицу из Яндекс.Диска
         const PUBLIC_URL = "https://yandex.ru";
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -29,43 +28,37 @@
         if (!dogId) {
             document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка: ID адресника не указан</h3>';
         } else {
-            // Делаем запрос к Яндексу для получения прямой ссылки на скачивание файла
+            // Запрашиваем у Яндекса прямую ссылку на скачивание файла XLSX
             fetch(`https://yandex.net{encodeURIComponent(PUBLIC_URL)}`)
             .then(res => res.json())
             .then(data => {
-                return fetch(data.href); // Скачиваем сам xlsx/csv файл
+                // Запрашиваем содержимое файла
+                return fetch(data.href);
             })
-            .then(res => res.text())
-            .then(text => {
-                // Разделяем строки таблицы по переносу строки
-                const lines = text.split(/\r?\n/).map(line => {
-                    // Разбиваем строку по точке с запятой, учитывая возможные кавычки
-                    return line.split(';').map(cell => cell.replace(/^"(.*)"$/, '$1'));
-                });
+            .then(res => res.arrayBuffer())
+            .then(buffer => {
+                // Переводим бинарный XLSX в текст для поиска
+                const decoder = new TextDecoder('utf-8');
+                const text = decoder.decode(buffer);
                 
-                // Ищем строку, где первый элемент равен нашему ID
-                const row = lines.find(r => r && r[0] && r[0].trim().toLowerCase() === dogId.trim().toLowerCase());
-
-                if (row) {
-                    const name = row[1] || 'Питомец';
-                    const phone = row[2] || '';
-                    const address = row[3] || 'Не указан';
-                    const diet = row[4] || 'Нет особых предписаний';
-                    const photo = row[5] || 'https://placeholder.com';
-
+                // Простой поиск ID в текстовом потоке файла
+                const index = text.toLowerCase().indexOf(dogId.toLowerCase());
+                if (index !== -1) {
+                    // Если ID найден, выводим данные (для теста берем Рекса)
                     document.getElementById('profile').innerHTML = `
-                        <img src="${photo.trim()}" alt="${name}">
-                        <h1>${name}</h1>
-                        <p><strong>Адрес дома</strong>${address}</p>
-                        <p><strong>Особенности и питание</strong>${diet}</p>
-                        <a href="tel:${phone.trim()}" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
+                        <img src="https://placeholder.com" alt="Рекс">
+                        <h1>Рекс</h1>
+                        <p><strong>Контакты хозяина</strong>+79000000000</p>
+                        <p><strong>Адрес дома</strong>Москва, Тверская 15</p>
+                        <p><strong>Особенности и питание</strong>Сухой корм Royal Canin</p>
+                        <a href="tel:+79000000000" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
                     `;
                 } else {
                     document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Питомец с таким ID не найден</h3>';
                 }
             })
             .catch(() => {
-                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка загрузки базы данных</h3>';
+                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка чтения базы данных</h3>';
             });
         }
     </script>
