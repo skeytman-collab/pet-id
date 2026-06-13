@@ -99,6 +99,12 @@
         <p style="text-align:center; width:100%; color:#fff;">Загрузка профиля питомца...</p>
     </div>
 
+    <!-- ТЕКСТОВАЯ БАЗА ДАННЫХ ПРЯМО ТУТ (Каждая строка — новая собака через точку с запятой) -->
+    <div id="my-database-storage" style="display:none;">
+id001;Рекс;Золотистый ретривер;Иван Петров +79000000000;Мария +79000000001;г. Москва, ул. Тверская, д. 15;Очень дружелюбный и активный пес. Любит людей и детей. Знает команды.;Выгул 3 раза в день. Приучен к туалету на улице. Ест 2 раза в день. Спит в коридоре.;Очень боится салютов и громких звуков! Не любит одиночество. Не трогать еду, когда он ест.;Сухой корм Royal Canin Maxi Adult. 200г утром и 200г вечером.;Шоколад, виноград, изюм, лук, чеснок, кости, любая еда со стола.;Нет известных аллергий на еду или лекарства.;Нет хронических заболеваний.;Лекарства не принимает.;900111222333444
+id002;Шарик;Дворняга;Алексей +79112223344;Ольга +79115556677;г. Краснодар;Ласковый пес;Выгул 2 раза в день;Боится ветеринаров;Каша с мясом;Сладкое, кости птицы;Нет;Нет;Не принимает;123456789012345
+    </div>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const rawId = urlParams.get('id');
@@ -107,94 +113,81 @@
         if (!dogId) {
             document.getElementById('app-container').innerHTML = '<h3 style="text-align:center; color:#fff; width:100%;">Ошибка: ID адресника не указан</h3>';
         } else {
-            // Читаем внешний текстовый файл базы данных без кэширования
-            fetch('database.txt?v=' + Math.random())
-            .then(res => {
-                if(!res.ok) throw new Error();
-                return res.text();
-            })
-            .then(text => {
-                const lines = text.split('\n');
-                let foundRow = null;
+            // Читаем строки из скрытого блока выше
+            const text = document.getElementById('my-database-storage').innerText;
+            const lines = text.split('\n');
+            let foundRow = null;
 
-                for (let line of lines) {
-                    if (!line.trim()) continue;
-                    const columns = line.split(';');
-                    if (columns[0] && columns[0].trim().toLowerCase() === dogId) {
-                        foundRow = columns;
-                        break;
-                    }
+            for (let line of lines) {
+                if (!line.trim()) continue;
+                const columns = line.split(';');
+                if (columns && columns[0].trim().toLowerCase() === dogId) {
+                    foundRow = columns;
+                    break;
                 }
+            }
 
-                if (foundRow) {
-                    // Заполняем поля из строчки текстового файла
-                    const name = foundRow[1] || 'Питомец';
-                    const breed = foundRow[2] || 'Порода не указана';
-                    const owner = foundRow[3] || 'Не указан';
-                    const phone2 = foundRow[4] || 'Не указан';
-                    const address = foundRow[5] || 'Не указан';
-                    
-                    const character = foundRow[6] || 'Нет данных';
-                    const habits = foundRow[7] || 'Нет данных';
-                    const fears = foundRow[8] || 'Нет данных';
-                    
-                    const ration = foundRow[9] || 'Нет данных';
-                    const forbidden = foundRow[10] || 'Нет данных';
-                    
-                    const allergy = foundRow[11] || 'Нет данных';
-                    const chronic = foundRow[12] || 'Нет';
-                    const medicines = foundRow[13] || 'Нет';
-                    const chip = foundRow[14] || 'Нет';
+            if (foundRow) {
+                const name = foundRow[1] || 'Питомец';
+                const breed = foundRow[2] || 'Порода не указана';
+                const owner = foundRow[3] || 'Не указан';
+                const phone2 = foundRow[4] || 'Не указан';
+                const address = foundRow[5] || 'Не указан';
+                
+                const character = foundRow[6] || 'Нет данных';
+                const habits = foundRow[7] || 'Нет данных';
+                const fears = foundRow[8] || 'Нет данных';
+                
+                const ration = foundRow[9] || 'Нет данных';
+                const forbidden = foundRow[10] || 'Нет данных';
+                
+                const allergy = foundRow[11] || 'Нет данных';
+                const chronic = foundRow[12] || 'Нет';
+                const medicines = foundRow[13] || 'Нет';
+                const chip = foundRow[14] || 'Нет';
 
-                    // Вытаскиваем только цифры из основного контакта для работы кнопки автозвонка
-                    const cleanPhone = owner.replace(/\D/g, '');
+                const cleanPhone = owner.replace(/\D/g, '');
 
-                    document.getElementById('app-container').innerHTML = `
-                        <div class="left-column">
-                            <div class="glass-card main-card">
-                                <div class="avatar-placeholder">🐾</div>
-                                <h1>${name}</h1>
-                                <div class="breed">${breed}</div>
-                                
-                                <div class="contacts-block">
-                                    <div class="contacts-title">🚨 В экстренной ситуации</div>
-                                    <div class="contact-item"><strong>Контакты:</strong> ${owner}</div>
-                                    <div class="contact-item"><strong>Доп. связь:</strong> ${phone2}</div>
-                                    <div class="contact-item"><strong>Адрес дома:</strong> ${address}</div>
-                                </div>
-                                
-                                <a href="tel:${cleanPhone}" class="btn">📞 ПОЗВОНИТЬ ДОМОЙ</a>
+                document.getElementById('app-container').innerHTML = `
+                    <div class="left-column">
+                        <div class="glass-card main-card">
+                            <div class="avatar-placeholder">🐾</div>
+                            <h1>${name}</h1>
+                            <div class="breed">${breed}</div>
+                            
+                            <div class="contacts-block">
+                                <div class="contacts-title">🚨 В экстренной ситуации</div>
+                                <div class="contact-item"><strong>Контакты:</strong> ${owner}</div>
+                                <div class="contact-item"><strong>Доп. связь:</strong> ${phone2}</div>
+                                <div class="contact-item"><strong>Адрес дома:</strong> ${address}</div>
                             </div>
+                            
+                            <a href="tel:${cleanPhone}" class="btn">📞 ПОЗВОНИТЬ ДОМОЙ</a>
                         </div>
+                    </div>
 
-                        <div class="right-column">
-                            <div class="glass-card info-container">
-                                <div class="info-section">
-                                    <div class="section-header"><span>🧠</span> Поведение и уход</div>
-                                    <div class="sub-block">
-                                        <div class="sub-title">Характер:</div>
-                                        <div class="sub-text">${character}</div>
-                                    </div>
-                                    <div class="sub-block">
-                                        <div class="sub-title">Привычки:</div>
-                                        <div class="sub-text">${habits}</div>
-                                    </div>
-                                    <div class="sub-block">
-                                        <div class="sub-title">Страхи / Стресс:</div>
-                                        <div class="sub-text">${fears}</div>
-                                    </div>
+                    <div class="right-column">
+                        <div class="glass-card info-container">
+                            <div class="info-section">
+                                <div class="section-header"><span>🧠</span> Поведение и уход</div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Характер:</div>
+                                    <div class="sub-text">${character}</div>
                                 </div>
-
-                                <div class="info-section">
-                                    <div class="section-header"><span>🥗</span> Кормление</div>
-                                    <div class="sub-block">
-                                        <div class="sub-title">Рацион:</div>
-                                        <div class="sub-text">${ration}</div>
-                                    </div>
-                                    <div class="sub-block">
-                                        <div class="sub-title" style="color:#ff4757;">⚠️ Категорически запрещено:</div>
-                                        <div class="sub-text" style="color:#ff6b6b; font-weight:600;">${forbidden}</div>
-                                    </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Привычки:</div>
+                                    <div class="sub-text">${habits}</div>
                                 </div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Страхи / Стресс:</div>
+                                    <div class="sub-text">${fears}</div>
+                                </div>
+                            </div>
 
-                                <div class="info-section">
+                            <div class="info-section">
+                                <div class="section-header"><span>🥗</span> Кормление</div>
+                                <div class="sub-block">
+                                    <div class="sub-title">Рацион:</div>
+                                    <div class="sub-text">${ration}</div>
+                                </div>
+                                <div class="sub-block">
