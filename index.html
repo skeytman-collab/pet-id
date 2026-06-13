@@ -8,27 +8,21 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #131416; color: #9aa0a6; padding: 20px; margin: 0; display: flex; justify-content: center; align-items: flex-start; min-height: 100vh; }
         .container { display: flex; gap: 24px; max-width: 1100px; width: 100%; margin: 20px auto; }
         
-        /* Левая колонка - Карточка */
         .left-column { width: 35%; display: flex; flex-direction: column; gap: 20px; }
         .main-card { background: #1c1d21; border-radius: 16px; padding: 24px; text-align: center; border: 1px solid #282a30; }
-        .avatar-container { position: relative; width: 100%; padding-top: 100%; margin-bottom: 15px; }
-        .avatar-container img { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 12px; object-fit: cover; }
         h1 { margin: 10px 0 2px 0; color: #ffffff; font-size: 28px; font-weight: bold; }
         .breed { color: #80868b; font-size: 15px; margin-bottom: 25px; }
         
-        /* Блок контактов внутри левой колонки */
         .contacts-block { background: #202124; border-radius: 12px; padding: 16px; text-align: left; }
-        .contacts-title { color: #00bcd4; font-size: 14px; font-weight: bold; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
+        .contacts-title { color: #00bcd4; font-size: 14px; font-weight: bold; margin-bottom: 12px; }
         .contact-item { font-size: 14px; margin-bottom: 8px; color: #bdc1c6; line-height: 1.4; }
         .contact-item strong { color: #80868b; font-weight: normal; }
         
-        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #00bcd4; color: #131416; padding: 16px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,188,212,0.2); }
-        .btn:hover { background: #00acc1; }
+        .btn { display: flex; align-items: center; justify-content: center; gap: 8px; background: #00bcd4; color: #131416; padding: 16px; border-radius: 25px; text-decoration: none; font-weight: bold; font-size: 16px; margin-top: 15px; transition: 0.2s; box-shadow: 0 4px 12px rgba(0,188,212,0.2); text-transform: uppercase; }
 
-        /* Правая колонка - Детали */
         .right-column { width: 65%; display: flex; flex-direction: column; gap: 20px; }
         .info-section { background: #1c1d21; border-radius: 16px; padding: 24px; border: 1px solid #282a30; text-align: left; }
-        .section-header { font-size: 16px; font-weight: bold; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section-header { font-size: 16px; font-weight: bold; margin-bottom: 16px; }
         .section-header.blue { color: #00bcd4; }
         .section-header.green { color: #2ecc71; }
         .section-header.medical { color: #4fc3f7; }
@@ -38,7 +32,6 @@
         .sub-title { color: #80868b; font-weight: bold; margin-bottom: 4px; }
         .sub-text { color: #e8eaed; }
 
-        /* Адаптивность под мобилки */
         @media (max-width: 768px) {
             .container { flex-direction: column; padding: 10px; margin: 0; }
             .left-column, .right-column { width: 100%; }
@@ -57,7 +50,7 @@
         if (!dogId) {
             document.getElementById('app-container').innerHTML = '<h3 style="text-align:center; color:#fff; width:100%;">Ошибка: ID адресника не указан</h3>';
         } else {
-            fetch('database.txt')
+            fetch('database.txt?v=' + Math.random())
             .then(res => {
                 if(!res.ok) throw new Error();
                 return res.text();
@@ -67,59 +60,52 @@
                 let foundRow = null;
 
                 for (let line of lines) {
+                    if (!line.trim()) continue;
                     const columns = line.split(';');
-                    if (columns && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
+                    if (columns[0] && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
                         foundRow = columns;
                         break;
                     }
                 }
 
                 if (foundRow) {
-                    // Раскладываем все 15 параметров из скриншота-оригинала
                     const name = foundRow[1] || 'Питомец';
                     const breed = foundRow[2] || 'Порода не указана';
                     const owner = foundRow[3] || 'Не указан';
-                    const phone1 = foundRow[4] || '';
-                    const phone2 = foundRow[5] || '';
-                    const address = foundRow[6] || 'Не указан';
+                    const phone1 = foundRow[3] ? (foundRow[3].match(/\+?\d+/g) || ['']).join('') : ''; 
+                    const phone2 = foundRow[4] || 'Не указан';
+                    const address = foundRow[5] || 'Не указан';
                     
-                    const character = foundRow[7] || 'Нет данных';
-                    const habits = foundRow[8] || 'Нет данных';
-                    const fears = foundRow[9] || 'Нет данных';
+                    const character = foundRow[6] || 'Нет данных';
+                    const habits = foundRow[7] || 'Нет данных';
+                    const fears = foundRow[8] || 'Нет данных';
                     
-                    const ration = foundRow[10] || 'Нет данных';
-                    const forbidden = foundRow[11] || 'Нет данных';
+                    const ration = foundRow[9] || 'Нет данных';
+                    const forbidden = foundRow[10] || 'Нет данных';
                     
-                    const allergy = foundRow[12] || 'Нет данных';
-                    const chronic = foundRow[13] || 'Нет';
-                    const medicines = foundRow[14] || 'Нет';
-                    const chip = foundRow[15] || 'Нет';
-                    const photo = foundRow[16] || 'https://unsplash.com';
+                    const allergy = foundRow[11] || 'Нет данных';
+                    const chronic = foundRow[12] || 'Нет';
+                    const medicines = foundRow[13] || 'Нет';
+                    const chip = foundRow[14] || 'Нет';
 
                     document.getElementById('app-container').innerHTML = `
-                        <!-- Левая часть -->
                         <div class="left-column">
                             <div class="main-card">
-                                <div class="avatar-container">
-                                    <img src="${photo.trim()}" alt="${name}">
-                                </div>
                                 <h1>${name}</h1>
                                 <div class="breed">${breed}</div>
                                 
                                 <div class="contacts-block">
                                     <div class="contacts-title">📇 Экстренная связь</div>
-                                    <div class="contact-item"><strong>Основной контакт:</strong> ${owner} ${phone1}</div>
+                                    <div class="contact-item"><strong>Основной контакт:</strong> ${owner}</div>
                                     <div class="contact-item"><strong>Доп. контакт:</strong> ${phone2}</div>
                                     <div class="contact-item"><strong>Адрес дома:</strong> ${address}</div>
                                 </div>
                                 
-                                <a href="tel:${phone1.trim()}" class="btn">📱 Позвонить хозяину</a>
+                                <a href="tel:${phone1}" class="btn">📱 Позвонить хозяину</a>
                             </div>
                         </div>
 
-                        <!-- Правая часть -->
                         <div class="right-column">
-                            <!-- Блок 1 -->
                             <div class="info-section">
                                 <div class="section-header blue">🧠 Поведение и уход</div>
                                 <div class="sub-block">
@@ -136,7 +122,6 @@
                                 </div>
                             </div>
 
-                            <!-- Блок 2 -->
                             <div class="info-section">
                                 <div class="section-header green">🍲 Кормление</div>
                                 <div class="sub-block">
@@ -149,7 +134,6 @@
                                 </div>
                             </div>
 
-                            <!-- Блок 3 -->
                             <div class="info-section">
                                 <div class="section-header medical">🧬 Медицинская карта</div>
                                 <div class="sub-block">
@@ -172,7 +156,13 @@
                         </div>
                     `;
                 } else {
-                    document.getElementById('app-container').innerHTML = `<h3 style="text-align:center; color:#fff; width:100%;">Питомец с ID "${dogId}" не найден</h3>`;
+                    document.getElementById('app-container').innerHTML = `<h3 style="text-align:center; color:#fff; width:100%;">Питомец с ID "${dogId}" не найден в базе данных</h3>`;
                 }
             })
             .catch(() => {
+                document.getElementById('app-container').innerHTML = '<h3 style="text-align:center; color:#fff; width:100%;">Ошибка чтения базы данных</h3>';
+            });
+        }
+    </script>
+</body>
+</html>
