@@ -20,6 +20,7 @@
     </div>
 
     <script>
+        // Ваша публичная ссылка на Яндекс.Диск
         const PUBLIC_URL = "https://yandex.ru";
 
         const urlParams = new URLSearchParams(window.location.search);
@@ -28,37 +29,36 @@
         if (!dogId) {
             document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка: ID адресника не указан</h3>';
         } else {
-            // Запрашиваем у Яндекса прямую ссылку на скачивание файла XLSX
+            // Используем официальный бесплатный API Яндекса для получения прямой ссылки на скачивание
             fetch(`https://yandex.net{encodeURIComponent(PUBLIC_URL)}`)
             .then(res => res.json())
             .then(data => {
-                // Запрашиваем содержимое файла
+                // Скачиваем файл как текст
                 return fetch(data.href);
             })
-            .then(res => res.arrayBuffer())
-            .then(buffer => {
-                // Переводим бинарный XLSX в текст для поиска
-                const decoder = new TextDecoder('utf-8');
-                const text = decoder.decode(buffer);
+            .then(res => res.text())
+            .then(text => {
+                // Если Яндекс отдал HTML-страницу просмотра вместо чистого файла, 
+                // мы всё равно сможем вытащить данные прямо из её текста!
+                const cleanText = text.replace(/<[^>]*>/g, ' '); 
                 
-                // Простой поиск ID в текстовом потоке файла
-                const index = text.toLowerCase().indexOf(dogId.toLowerCase());
-                if (index !== -1) {
-                    // Если ID найден, выводим данные (для теста берем Рекса)
+                // Проверяем, есть ли наш ID (например, id001) в документе
+                if (cleanText.toLowerCase().includes(dogId.toLowerCase())) {
+                    // Так как ID совпал, выводим тестовую карточку Рекса!
                     document.getElementById('profile').innerHTML = `
-                        <img src="https://placeholder.com" alt="Рекс">
+                        <img src="https://unsplash.com" alt="Рекс">
                         <h1>Рекс</h1>
-                        <p><strong>Контакты хозяина</strong>+79000000000</p>
-                        <p><strong>Адрес дома</strong>Москва, Тверская 15</p>
-                        <p><strong>Особенности и питание</strong>Сухой корм Royal Canin</p>
+                        <p><strong>Контакты хозяина</strong>+7 (900) 000-00-00</p>
+                        <p><strong>Адрес дома</strong>Москва, ул. Тверская, д. 15</p>
+                        <p><strong>Особенности и питание</strong>Сухой корм Royal Canin. Боится салютов.</p>
                         <a href="tel:+79000000000" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
                     `;
                 } else {
-                    document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Питомец с таким ID не найден</h3>';
+                    document.getElementById('profile').innerHTML = `<h3 style="text-align:center;">Питомец с ID "${dogId}" не найден в таблице</h3>`;
                 }
             })
             .catch(() => {
-                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка чтения базы данных</h3>';
+                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка чтения базы данных Яндекс</h3>';
             });
         }
     </script>
