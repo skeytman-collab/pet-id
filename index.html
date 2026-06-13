@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Профиль питомца</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #121212; color: #e0e0e0; text-align: center; padding: 20px; margin: 0; }
+        .card { background: #1e1e1e; border-radius: 20px; padding: 30px 20px; max-width: 360px; margin: 40px auto; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #2e2e2e; }
+        img { width: 130px; height: 130px; border-radius: 50%; object-fit: cover; border: 3px solid #00bcd4; margin-bottom: 15px; }
+        h1 { margin: 10px 0 5px 0; color: #ffffff; font-size: 24px; }
+        p { margin: 12px 0; font-size: 15px; line-height: 1.4; text-align: left; background: #262626; padding: 10px 15px; border-radius: 10px; }
+        strong { color: #00bcd4; display: block; margin-bottom: 3px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; }
+        .btn { display: block; background: #00bcd4; color: #000000; padding: 16px; border-radius: 15px; text-decoration: none; font-weight: bold; margin-top: 25px; font-size: 16px; box-shadow: 0 4px 15px rgba(0,188,212,0.4); text-transform: uppercase; }
+    </style>
+</head>
+<body>
+    <div class="card" id="profile">
+        <p style="text-align:center;">Загрузка данных питомца...</p>
+    </div>
+
+    <script>
+        // Ссылка на вашу таблицу из Яндекс.Диска
+        const PUBLIC_URL = "https://yandex.ru";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const dogId = urlParams.get('id');
+
+        if (!dogId) {
+            document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка: ID адресника не указан</h3>';
+        } else {
+            // Делаем запрос к Яндексу для получения прямой ссылки на скачивание файла
+            fetch(`https://yandex.net{encodeURIComponent(PUBLIC_URL)}`)
+            .then(res => res.json())
+            .then(data => {
+                return fetch(data.href); // Скачиваем сам xlsx/csv файл
+            })
+            .then(res => res.text())
+            .then(text => {
+                // Разделяем строки таблицы по переносу строки
+                const lines = text.split(/\r?\n/).map(line => {
+                    // Разбиваем строку по точке с запятой, учитывая возможные кавычки
+                    return line.split(';').map(cell => cell.replace(/^"(.*)"$/, '$1'));
+                });
+                
+                // Ищем строку, где первый элемент равен нашему ID
+                const row = lines.find(r => r && r[0] && r[0].trim().toLowerCase() === dogId.trim().toLowerCase());
+
+                if (row) {
+                    const name = row[1] || 'Питомец';
+                    const phone = row[2] || '';
+                    const address = row[3] || 'Не указан';
+                    const diet = row[4] || 'Нет особых предписаний';
+                    const photo = row[5] || 'https://placeholder.com';
+
+                    document.getElementById('profile').innerHTML = `
+                        <img src="${photo.trim()}" alt="${name}">
+                        <h1>${name}</h1>
+                        <p><strong>Адрес дома</strong>${address}</p>
+                        <p><strong>Особенности и питание</strong>${diet}</p>
+                        <a href="tel:${phone.trim()}" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
+                    `;
+                } else {
+                    document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Питомец с таким ID не найден</h3>';
+                }
+            })
+            .catch(() => {
+                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка загрузки базы данных</h3>';
+            });
+        }
+    </script>
+</body>
+</html>
