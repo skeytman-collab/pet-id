@@ -20,45 +20,53 @@
     </div>
 
     <script>
-        // Ваша публичная ссылка на Яндекс.Диск
-        const PUBLIC_URL = "https://yandex.ru";
-
         const urlParams = new URLSearchParams(window.location.search);
         const dogId = urlParams.get('id');
 
         if (!dogId) {
             document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка: ID адресника не указан</h3>';
         } else {
-            // Используем официальный бесплатный API Яндекса для получения прямой ссылки на скачивание
-            fetch(`https://yandex.net{encodeURIComponent(PUBLIC_URL)}`)
-            .then(res => res.json())
-            .then(data => {
-                // Скачиваем файл как текст
-                return fetch(data.href);
+            // Читаем файл базы данных прямо из этого же репозитория GitHub
+            fetch('database.txt')
+            .then(res => {
+                if(!res.ok) throw new Error();
+                return res.text();
             })
-            .then(res => res.text())
             .then(text => {
-                // Если Яндекс отдал HTML-страницу просмотра вместо чистого файла, 
-                // мы всё равно сможем вытащить данные прямо из её текста!
-                const cleanText = text.replace(/<[^>]*>/g, ' '); 
-                
-                // Проверяем, есть ли наш ID (например, id001) в документе
-                if (cleanText.toLowerCase().includes(dogId.toLowerCase())) {
-                    // Так как ID совпал, выводим тестовую карточку Рекса!
+                // Разделяем строки текстовой базы
+                const lines = text.split('\n');
+                let foundRow = null;
+
+                // Ищем строку, которая начинается с нужного ID
+                for (let line of lines) {
+                    const columns = line.split(';');
+                    if (columns[0] && columns[0].trim().toLowerCase() === dogId.trim().toLowerCase()) {
+                        foundRow = columns;
+                        break;
+                    }
+                }
+
+                if (foundRow) {
+                    const name = foundRow[1] || 'Питомец';
+                    const phone = foundRow[2] || '';
+                    const address = foundRow[3] || 'Не указан';
+                    const diet = foundRow[4] || 'Нет особых предписаний';
+                    const photo = foundRow[5] || 'https://unsplash.com';
+
                     document.getElementById('profile').innerHTML = `
-                        <img src="https://unsplash.com" alt="Рекс">
-                        <h1>Рекс</h1>
-                        <p><strong>Контакты хозяина</strong>+7 (900) 000-00-00</p>
-                        <p><strong>Адрес дома</strong>Москва, ул. Тверская, д. 15</p>
-                        <p><strong>Особенности и питание</strong>Сухой корм Royal Canin. Боится салютов.</p>
-                        <a href="tel:+79000000000" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
+                        <img src="${photo.trim()}" alt="${name}">
+                        <h1>${name}</h1>
+                        <p><strong>Контакты хозяина</strong>${phone}</p>
+                        <p><strong>Адрес дома</strong>${address}</p>
+                        <p><strong>Особенности и питание</strong>${diet}</p>
+                        <a href="tel:${phone.trim()}" class="btn">📞 ПОЗВОНИТЬ ХОЗЯИНУ</a>
                     `;
                 } else {
-                    document.getElementById('profile').innerHTML = `<h3 style="text-align:center;">Питомец с ID "${dogId}" не найден в таблице</h3>`;
+                    document.getElementById('profile').innerHTML = `<h3 style="text-align:center;">Питомец с ID "${dogId}" не найден</h3>`;
                 }
             })
             .catch(() => {
-                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка чтения базы данных Яндекс</h3>';
+                document.getElementById('profile').innerHTML = '<h3 style="text-align:center;">Ошибка чтения базы данных</h3>';
             });
         }
     </script>
